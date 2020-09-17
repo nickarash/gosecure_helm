@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.helloserviceName }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.helloserviceport }}
+    targetPort: {{ .Values.helloservicetargetport }}
+  selector:
+#   app: hello-kubernetes-custom
+    {{ .Values.helloselectors }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  {{ .Values.hellodeploymentName }} #hello-kubernetes-custom
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: {{ .Values.hellodeploymentapp }} #hello-kubernetes-custom
+  template:
+    metadata:
+      labels:
+        app:  {{ .Values.hellodeploymentapp }} #hello-kubernetes-custom
+    spec:
+      containers:
+      - name: hello-kubernetes
+        image: paulbouwer/hello-kubernetes:1.8
+        ports:
+        - containerPort: {{ .Values.hellocontainerPort }}
+        env:
+        - name: MESSAGE
+          value: This is Nick! I just deployed this on Kubernetes!
